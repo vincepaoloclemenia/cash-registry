@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_21_121450) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_21_195704) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -22,6 +22,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_21_121450) do
     t.bigint "shop_item_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "actual_quantity_taken", default: 0, null: false
     t.index ["purchase_id"], name: "index_purchase_items_on_purchase_id"
     t.index ["shop_item_id"], name: "index_purchase_items_on_shop_item_id"
   end
@@ -43,6 +44,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_21_121450) do
     t.decimal "price", precision: 10, scale: 2
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "code", null: false
+    t.index ["code"], name: "index_shop_items_on_code"
     t.index ["name"], name: "index_shop_items_on_name"
   end
 
