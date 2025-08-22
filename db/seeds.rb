@@ -7,3 +7,24 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+attributes_for_shop_items = [
+  {
+    code: 'GR1',
+    name: 'Coffee',
+    price: 3.11
+  },
+  {
+    code: 'SR1',
+    name: 'Strawberries',
+    price: 5.00
+  },
+  {
+    code: 'CF1',
+    name: 'Coffee',
+    price: 11.23
+  }
+]
+Rails.logger.info 'Creating 3 shopping items'
+ShopItem.upsert_all(attributes_for_shop_items)
+Rails.logger.info "Created #{ShopItem.count} items"

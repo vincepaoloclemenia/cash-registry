@@ -24,5 +24,9 @@ FactoryBot.define do
         item.shop_item = create(:shop_item, :strawberries)
       end
     end
+
+    before(:create) do |item|
+      item.purchase.touch
+    end
   end
 end
