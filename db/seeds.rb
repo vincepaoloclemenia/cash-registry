@@ -11,7 +11,7 @@
 attributes_for_shop_items = [
   {
     code: 'GR1',
-    name: 'Coffee',
+    name: 'Green Tea',
     price: 3.11
   },
   {

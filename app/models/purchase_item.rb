@@ -10,13 +10,11 @@ class PurchaseItem < ApplicationRecord
 
   delegate :price, :code, to: :shop_item
 
-  before_validation :assign_attributes_by_promo
+  before_validation :assign_attributes_by_promo,
+                    :mark_for_destruction_if_zero_quantity
 
   after_update :touch_purchase, if: -> { discounted_price_previously_changed? && amount_without_discount_previously_changed? }
-
-  accepts_nested_attributes_for :purchase_items,
-                                allow_destroy: true,
-                                reject_if: -> { new_record? && quantity <= 0 }
+  
   private
 
   def assign_attributes_by_promo
@@ -40,5 +38,11 @@ class PurchaseItem < ApplicationRecord
         updated_at: Time.current
       )
     end
+  end
+  
+  def mark_for_destruction_if_zero_quantity
+    return if quantity > 0
+
+    mark_for_destruction
   end
 end

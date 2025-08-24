@@ -1,0 +1,31 @@
+<h3>Shopping Items</h3>
+
+<br/>
+<br/>
+
+<%= form_with model: @purchase, local: true, class: "container mt-4" do |f| %>
+  <div class="card shadow-sm p-4">
+    <h4 class="mb-4">New Purchase</h5>
+    <br/>
+    <br/>
+    <div class="row mb-3 border-bottom pb-3">
+      <% @shop_items.each do |shop_item| %>
+        <%= f.fields_for :purchase_items,  do |pi_form| %>
+          <% binding.pry %>
+          <div class='row p-5'>
+            <div class="col-md-3">
+              <%= pi_form.label :quantity, shop_item.name, class: "form-label" %>
+            </div>
+            <div class="col-md-3 offset-md-3">
+              <%= pi_form.number_field :quantity, min: 0, value: 1, class: "form-control" %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="d-flex justify-content-end">
+      <%= f.submit "Submit Purchase", class: "btn btn-primary" %>
+    </div>
+  </div>
+<% end %>

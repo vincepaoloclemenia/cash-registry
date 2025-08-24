@@ -50,7 +50,7 @@ RSpec.describe PurchaseItem, type: :model do
 
   context 'when updating purchase item' do
     let(:green_tea) { create(:shop_item, :green_tea) }
-    let(:purchase_item) { create(:purchase_item, shop_item: green_tea, quantity: 3) }
+    let(:purchase_item) { build(:purchase_item, shop_item: green_tea, quantity: 3) }
     let(:purchase) do
       build(
         :purchase,
@@ -78,7 +78,7 @@ RSpec.describe PurchaseItem, type: :model do
 
     context 'when purchased item is strawberries' do
       let(:strawberries) { create(:shop_item, :strawberries) }
-      let(:purchase_item) { create(:purchase_item, shop_item: strawberries, quantity: 4) }
+      let(:purchase_item) { build(:purchase_item, shop_item: strawberries, quantity: 4) }
 
       it { expect(purchase.discounted_price).to eq(purchase_item.discounted_price) }
       
@@ -88,6 +88,73 @@ RSpec.describe PurchaseItem, type: :model do
         it { expect(purchase_item.reload.quantity).to eq(2) }
         it { expect(purchase_item.reload.discounted_price.to_f).to eq(10.00) }
         it { expect(purchase_item.reload.amount_without_discount.to_f).to eq(10.00) }
+      end
+    end
+  end
+
+  describe '#mark_for_destruction_if_zero_quantity' do
+    let(:green_tea) { build(:purchase_item, :green_tea, quantity: 0) }
+    let(:strawberries) { build(:purchase_item, :strawberries, quantity: 0) }
+    let(:coffee) { build(:purchase_item, :coffee, quantity: 0) }
+    let(:purchase) do
+      build(
+        :purchase,
+        purchase_items: [green_tea, strawberries, coffee]
+      )
+    end
+
+    context 'when all items are 0' do
+      it { expect(purchase).not_to be_valid }
+
+      it 'returns error message saying add at least one item' do
+        purchase.valid?
+        expect(purchase.errors.full_messages.to_sentence).to eq 'You must add at least one item to your purchase'
+      end
+    end
+
+    context 'when updating purchase item down to 0 quantity' do
+      let(:green_tea) { build(:purchase_item, :green_tea, quantity: 3) } # 9.33
+      let(:strawberries) { build(:purchase_item, :strawberries, quantity: 4) } # 18.00
+      let(:coffee) { build(:purchase_item, :coffee, quantity: 2) } # 22.46
+      let!(:purchase) do
+        create(
+          :purchase,
+          purchase_items: [green_tea, strawberries, coffee]
+        )
+      end
+
+      let(:params) do
+        {
+          purchase: {
+            purchase_items_attributes: [
+              {
+                id: strawberries.id,
+                quantity: 0
+              },
+              green_tea.attributes.slice(:id, :quantity).symbolize_keys,
+              coffee.attributes.slice(:id, :quantity).symbolize_keys
+            ]
+          }
+        }
+      end
+
+      it { expect(purchase.amount_without_discount).to eq(61.12) }
+      it { expect(purchase.discounted_price).to eq(49.79) }
+
+      it 'deletes the item instead of retaining with 0 quantity' do
+        expect { purchase.update!(params[:purchase]) }.to change(purchase.reload.purchase_items, :count).from(3).to(2)
+      end
+
+      it 'updates the total amount to be paid of purchase' do
+        expect {
+          purchase.update!(params[:purchase])
+        }.to change(purchase.reload, :amount_without_discount).by(-20.00)
+      end
+
+      it 'updates the total amount to be paid of purchase' do
+        expect {
+          purchase.update!(params[:purchase])
+        }.to change(purchase.reload, :discounted_price).by(-18.00)
       end
     end
   end
