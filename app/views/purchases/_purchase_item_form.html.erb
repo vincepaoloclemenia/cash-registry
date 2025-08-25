@@ -1,0 +1,14 @@
+<%= form.hidden_field :shop_item_id, value: shop_item.id %>
+<div class='row p-5'>
+  <div class="col-md-3">
+    <div class='pull-left px-5'>
+      <%= form.check_box :_destroy %>
+    </div>
+    <div class='px-5'>
+      <%= form.label :quantity, shop_item.name, class: "form-label #{shop_item.code.downcase}" %>
+    </div>
+  </div>
+  <div class="col-md-3 offset-md-3">
+    <%= form.number_field :quantity, min: 0, value: form.object.quantity.presence || 0, class: "form-control" %>
+  </div>
+</div>

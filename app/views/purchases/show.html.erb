@@ -1,0 +1,44 @@
+<h3><%= @purchase.name %></h3>
+<br/>
+<%= link_to 'Update cart', edit_purchase_path(@purchase), class: 'btn btn-primary' %>
+<br/>
+<br/>
+
+<div class="card shadow-sm p-4">
+  <h4 class="mb-4">Purchase status: <%= @purchase.status.humanize.titleize %></h5>
+  <br/>
+  <br/>
+  <div class="mb-5 border-bottom pb-3">
+    <% @purchase.purchase_items.includes(:shop_item).order('shop_items.code ASC').find_each do |purchase_item| %>
+      <div class='row p-5'>
+        <div class="col-md-3">
+          <p><%= purchase_item.shop_item.name %> (x<%= purchase_item.quantity %>): </p>
+        </div>
+        <div class="col-md-3 offset-md-3">
+          <% if purchase_item.discounted? %>
+            <s><b><%= number_to_currency purchase_item.amount_without_discount, unit: '€' %></b></s> 
+          <% end %> <b><%= number_to_currency purchase_item.discounted_price, unit: '€' %></b>
+        </div>
+      </div>
+    <% end %>
+    <% if @purchase.discounted? %>
+      <div class='row p-5'>
+        <div class="col-md-3">
+          <h4>From: </h4>
+        </div>
+        <div class="col-md-3 offset-md-3">
+          <h4><s><b><%= number_to_currency @purchase.amount_without_discount, unit: '€' %></b></s></h4>
+        </div>
+      </div>
+    <% end %>
+
+    <div class='row p-5'>
+      <div class="col-md-3">
+        <h4>Total of: </h4>
+      </div>
+      <div class="col-md-3 offset-md-3">
+        <h4><b><%= number_to_currency @purchase.discounted_price, unit: '€' %></b></h4>
+      </div>
+    </div>
+  </div>
+</div>

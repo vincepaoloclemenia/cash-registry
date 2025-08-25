@@ -1,0 +1,36 @@
+<h3>Purchases</h3>
+
+<br/>
+<br/>
+
+<div class="card shadow-sm p-4">
+  <% @purchases.each do |purchase| %>
+    <div class="mb-5 border-bottom pb-3">
+      <div class='row p-5'>
+        <div class="col-md-2">
+          <p><%= purchase.name %></p>
+        </div>
+        <div class="col-md-3">
+          <b><%= number_to_currency purchase.discounted_price, unit: '€' %></b>
+        </div>
+        <div class="col-md-4">
+          <% if purchase.completed? || purchase.cancelled? %>
+            <b><%= purchase.status.humanize.titleize %></b>
+          <% else %>
+            <%= link_to 'Mark as Completed',
+                        mark_as_completed_purchase_path(purchase),
+                        class: 'pull-left btn btn-primary',
+                        method: :patch,
+                        data: { confirm: 'Paying now?' } %>
+
+            <%= link_to 'Mark as Cancelled',
+                        mark_as_cancelled_purchase_path(purchase),
+                        class: 'pull-right btn btn-danger',
+                        method: :patch,
+                        data: { confirm: 'Are you sure?' } %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

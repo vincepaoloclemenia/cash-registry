@@ -1,4 +1,6 @@
 class PurchaseItem < ApplicationRecord
+  include PurchasingConcerns
+
   PROMOS = {
     gr1: BuyOneGetOneService,
     sr1: BuyThreeGetFiftyCentDiscountService,
@@ -14,7 +16,7 @@ class PurchaseItem < ApplicationRecord
                     :mark_for_destruction_if_zero_quantity
 
   after_update :touch_purchase, if: -> { discounted_price_previously_changed? && amount_without_discount_previously_changed? }
-  
+
   private
 
   def assign_attributes_by_promo

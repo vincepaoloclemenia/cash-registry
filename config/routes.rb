@@ -11,7 +11,11 @@ Rails.application.routes.draw do
   root to: 'purchases#new'
   get '/cart', to: 'purchases#new', as: :cart
 
-  resources :purchases do
+  resources :purchases, except: :destroy do
+    member do
+      patch :mark_as_completed
+      patch :mark_as_cancelled
+    end
     resources :purchase_items
   end
 end

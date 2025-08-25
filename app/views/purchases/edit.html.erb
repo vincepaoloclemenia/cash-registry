@@ -1,16 +1,11 @@
-<h3>Shopping Items</h3>
-
-<br/>
-<br/>
-
 <%= form_with model: @purchase, local: true, class: "container mt-4" do |f| %>
   <div class="card shadow-sm p-4">
-    <h4 class="mb-4">New Purchase</h5>
+    <h4 class="mb-4">Update Cart</h5>
     <br/>
     <br/>
     <div class="mb-5 border-bottom pb-3">
       <% @shop_items.each do |shop_item| %>
-        <%= f.fields_for :purchase_items, @purchase.purchase_items.build do |pi_form| %>
+        <%= f.fields_for :purchase_items, @purchase_items.find_or_initialize_by(shop_item: shop_item) do |pi_form| %>
           <%= render partial: 'purchase_item_form', locals: { form: pi_form, shop_item: shop_item } %>
         <% end %>
       <% end %>
